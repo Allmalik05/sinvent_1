@@ -3,7 +3,10 @@
 @section('content')
     <div class="container">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-10">
+                    <div class="col-md-12  text-right">
+                        <a href="{{ route('barang.index') }}" class="btn btn-md btn-primary mb-3">Back</a>
+                    </div>
                <div class="card border-0 shadow rounded">
                     <div class="card-body">
                         <table class="table">
@@ -24,18 +27,16 @@
                                 <td>{{ $rsetBarang->stok }}</td>
                             </tr>
                             <tr>
-                                <td>KATEGORI</td>
+                            <tr>
+                                <td>DESKRIPSI</td>
                                 <td>{{ $rsetBarang->kategori->deskripsi }}</td>
+                            </tr>
+                                <td>KATEGORI</td>
+                                <td>{{ $rsetKategori->ketkategori }}</td>
                             </tr>
                         </table>
                     </div>
                </div>
-            </div>
-        </div>
-        <br>
-        <div class="row">
-            <div class="col-md-12  text-right">
-                <a href="{{ route('barang.index') }}" class="btn btn-md btn-primary mb-3">Back</a>
             </div>
         </div>
     </div>

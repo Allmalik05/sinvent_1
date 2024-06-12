@@ -8,6 +8,7 @@ use App\Models\BarangKeluar;
 use App\Models\Barang;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class BarangmasukController extends Controller
@@ -15,10 +16,25 @@ class BarangmasukController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $tgl_masuk = $request->input('tgl_masuk');
+
         Paginator::useBootstrap();
-        $datamasuk = BarangMasuk::paginate(5);
+        $datamasuk = BarangMasuk::with('barang')
+                                ->when($search, function ($query, $search) {
+                                    return $query->whereHas('barang', function($q) use ($search) {
+                                        $q->where('merk', 'like', '%' . $search . '%')
+                                        ->orWhere('seri', 'like', '%' . $search . '%');
+                                    });
+                                })
+                                ->when($tgl_masuk, function ($query, $tgl_masuk) {
+                                    return $query->whereDate('tgl_masuk', $tgl_masuk);
+                                })
+                                ->paginate(5);
+
+        $datamasuk->appends(['search' => $search]);                       
         $user = Auth::user();
         return view('v_barangMasuk.index', compact('datamasuk', 'user'));
     }
@@ -132,10 +148,5 @@ class BarangmasukController extends Controller
 
         // Redirect ke index dengan pesan sukses
         return redirect()->route('barangmasuk.index')->with(['success' => 'Data Berhasil Dihapus!']);
-        //delete post
-        // $datamasuk->delete();
-
-        //redirect to index
-        // return redirect()->route('barangmasuk.index')->with(['success' => 'Data Berhasil Dihapus!']);
     }
 }

@@ -5,12 +5,19 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12  text-right">
-                            <a href="{{ route('barang.index') }}" class="btn btn-md btn-primary mb-3">Back</a>
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="font-weight-bold mb-3 mt-3">TAMBAH BARANG</h4>
+                            </div>
                         </div>
                     </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12  text-right">
+                                <a href="{{ route('barang.index') }}" class="btn btn-md btn-primary mb-3">Back</a>
+                            </div>
+                        </div>
                         <form action="{{ route('barang.store') }}" method="POST" enctype="multipart/form-data">                    
                             @csrf
 
@@ -65,9 +72,6 @@
                         </form> 
                     </div>
                 </div>
-
- 
-
             </div>
         </div>
     </div>

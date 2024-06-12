@@ -9,6 +9,7 @@ use App\Models\BarangMasuk;
 use App\Models\BarangKeluar;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 class BarangController extends Controller
@@ -16,15 +17,26 @@ class BarangController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
         Paginator::useBootstrap();
-        // $rsetBarang = Barang::orderBy('id', 'asc')->get();
-        $rsetBarang = Barang::paginate(5);
+        $rsetBarang =  Barang::with('kategori')
+                                ->when($search, function ($query, $search) {
+                                return $query->where('merk', 'like', '%' . $search . '%')
+                                    ->orWhere('seri', 'like', '%' . $search . '%')
+                                    ->orWhere('stok', 'like', '%' . $search . '%')
+                                    ->orWhereHas('kategori', function ($query) use ($search) {
+                                    $query->where('deskripsi', 'like', '%' . $search . '%')
+                                    ->orwhere('kategori', 'like', '%' . $search . '%');
+                                    });
+                            })
+                            // ->latest()
+                            ->paginate(5);
+        
+        $rsetBarang->appends(['search' => $search]);
         $user = Auth::user();
         return view('v_barang.index',compact('rsetBarang', 'user'));
-        // $rsetBarang = Barang::all();
-        // return view('v_barang.1',compact('rsetBarang'));
     }
 
     /**
@@ -67,8 +79,10 @@ class BarangController extends Controller
     public function show(string $id)
     {
         $user = Auth::user();
-        $rsetBarang = Barang::find($id);    
-        return view('v_barang.show',compact('rsetBarang', 'user'));
+        $rsetBarang = Barang::find($id);
+        $rsetKategori = DB::table('kategori')->select('id','deskripsi', 'kategori',DB::raw('ketKategorik(kategori) as ketkategori'))->where('id', $rsetBarang->kategori_id)
+        ->first();    
+        return view('v_barang.show',compact('rsetBarang', 'rsetKategori','user'));
     }
 
     /**

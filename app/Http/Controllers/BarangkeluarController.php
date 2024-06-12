@@ -15,12 +15,26 @@ class BarangkeluarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $datakeluar = Barangkeluar::all();
-        // return view('v_barangKeluar.index', compact('datakeluar'));
         Paginator::useBootstrap();
-        $datakeluar = Barangkeluar::paginate(8); // Use pagination for better handling of large datasets
+        $search = $request->input('search');
+        $tgl_keluar = $request->input('tgl_keluar');
+
+        $datakeluar = Barangkeluar::with('barang')
+                                ->when($search, function ($query, $search) {
+                                    return $query->whereHas('barang', function($q) use ($search) {
+                                        $q->where('merk', 'like', '%' . $search . '%')
+                                        ->orWhere('seri', 'like', '%' . $search . '%');
+                                    });
+                                })
+                                ->when($tgl_keluar, function ($query, $tgl_keluar) {
+                                    return $query->whereDate('tgl_keluar', $tgl_keluar);
+                                })
+                                ->latest()
+                                ->paginate(10);
+
+
         $user = Auth::user();
         return view('v_barangKeluar.index', compact('datakeluar', 'user'));
     }

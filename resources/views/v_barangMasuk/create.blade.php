@@ -6,14 +6,11 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12  text-left">
-                            <h2>Barang Masuk</h2>
+                        <div class="row">
+                            <div class="col-md-12  text-right">
+                                <a href="{{ route('barangmasuk.index') }}" class="btn btn-md btn-primary mb-3">Back</a>
+                            </div>
                         </div>
-                        <div class="col-md-12  text-right">
-                            <a href="{{ route('barangmasuk.index') }}" class="btn btn-md btn-primary mb-3">Back</a>
-                        </div>
-                    </div>
                         <form action="{{ route('barangmasuk.store') }}" method="POST" enctype="multipart/form-data">                    
                             @csrf
 

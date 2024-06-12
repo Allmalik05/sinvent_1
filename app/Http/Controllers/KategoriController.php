@@ -18,13 +18,25 @@ class KategoriController extends Controller
 
     use ValidatesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
-        // $rsetKategori = Kategori::getKategoriAll();
-        // return view('v_kategori.index', compact('rsetKategori'));
-
+        // membuat variabel untuk menampung nilai request search
+        $search = $request->input('search');
         Paginator::useBootstrap();
-        $rsetKategori = DB::table('kategori')->select('id','deskripsi', 'kategori',DB::raw('ketKategorik(kategori) as ketkategori'))->paginate(8);
+
+        // variabel untuk menampung semua data tabel kategori atau search
+        $rsetKategori = DB::table('kategori')->select('id','deskripsi', 'kategori',DB::raw('ketKategorik(kategori) as ketkategori'))
+        ->when($search, function ($query, $search) {
+            return $query->where('deskripsi', 'like', '%' . $search . '%')
+                         ->orwhere('kategori', 'like', '%' . $search . '%')
+                         ->orWhere(DB::raw('ketKategorik(kategori.kategori) COLLATE utf8mb4_unicode_ci'), 'like', '%' . $search . '%');
+            
+        })
+        ->latest()
+        ->paginate(6);
+
+        // menampung data request search
+        $rsetKategori->appends(['search' => $search]);
         $user = Auth::user();
         return view('v_kategori.index',compact('rsetKategori', 'user'));
     }

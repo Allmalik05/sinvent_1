@@ -27,7 +27,7 @@ Route::post('loginAction', [LoginController::class,'authenticate']);
 
 // ROUTE LOGOUT
 Route::get('logout', [LoginController::class,'logout']);
-Route::post('logout', [LoginController::class,'logout']);
+Route::post('logout', [LoginController::class,'logout'])->name('logout');
 
 // ROUTE REGISTER
 Route::get('register', [RegisterController::class,'create']);
